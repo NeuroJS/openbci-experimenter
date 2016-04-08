@@ -1,0 +1,21 @@
+{
+  "name": "openbci-experimenter",
+  "private": false,
+  "version": "0.0.1",
+  "description": "Node.js app for recording experiments based on OpenBCI data samples",
+  "main": "experimenter.js",
+  "license": "MIT",
+  "keywords": [
+    "openbci",
+    "experiment",
+    "machine-learning"
+  ],
+  "author": "Alex Castillo",
+  "scripts": {
+  },
+  "dependencies": {
+    "jsonfile": "^2.2.3",
+    "openbci-sdk": "^0.2.0",
+    "yargs": "^4.3.2"
+  }
+}
