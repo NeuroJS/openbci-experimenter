@@ -42,7 +42,7 @@ function onBoardReady () {
     console.log(experiment.name + ' experiment started');
     board.streamStart();
     board.on('sample', addPattern);
-    setTimeout(endExperiment, experiment.duration);
+    setTimeout(disconnectBoard, experiment.duration);
 }
 
 // Add pattern
@@ -60,10 +60,8 @@ function addPattern (sample) {
     console.log('pattern', pattern);
 }
 
-// End Experiment
-function endExperiment () {
-    board.streamStop()
-        .then(board.disconnect());
+// Save experiment
+function saveExperiment () {
     jsonfile.writeFile(experiment.filePath, experiment, { spaces: 2 }, function (error) {
         if (!error) {
             console.log(experiment.name + ' experiment finished with ' + experiment.patternsTotal  + ' patterns');
@@ -72,6 +70,20 @@ function endExperiment () {
             console.log(experiment.name + ' experiment failed. sucks to be you.');
         }
     });
+}
+
+/**
+ * Disconnect board
+ */
+function disconnectBoard () {
+    board.streamStop()
+        .then(function () {
+            setTimeout(function () {
+                board.disconnect();
+                saveExperiment();
+                console.log('board disconnected');
+            }, 50);
+        });
 }
 
 
