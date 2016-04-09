@@ -10,8 +10,9 @@ var experiment = {
     subject: argv._[1],
     duration: argv._[5],
     filePath: path.join(__dirname, 'data', argv._[3] + '-' + argv._[1] + '.json'),
-    patternsTotal: 0,
-    patterns: []
+    samplesTotal: 0,
+    features: [],
+    labels: []
 };
 
 console.log(experiment);
@@ -41,30 +42,23 @@ function onBoardConnect () {
 function onBoardReady () {
     console.log(experiment.name + ' experiment started');
     board.streamStart();
-    board.on('sample', addPattern);
+    board.on('sample', addSample);
     setTimeout(disconnectBoard, experiment.duration);
 }
 
-// Add pattern
-function addPattern (sample) {
-    var pattern = {
-        input: {},
-        output: {}
-    };
-    sample.channelData.forEach(function (channel, index) {
-        pattern.input[index + 1] = channel;
-    });
-    pattern.output[experiment.name] = 1;
-    experiment.patternsTotal++;
-    experiment.patterns.push(pattern);
-    console.log('pattern', pattern);
+// Add sample
+function addSample (sample) {
+    experiment.samplesTotal++;
+    experiment.features.push(sample.channelData);
+    experiment.labels.push(experiment.name);
+    console.log('pattern', sample.channelData, experiment.name);
 }
 
 // Save experiment
 function saveExperiment () {
     jsonfile.writeFile(experiment.filePath, experiment, { spaces: 2 }, function (error) {
         if (!error) {
-            console.log(experiment.name + ' experiment finished with ' + experiment.patternsTotal  + ' patterns');
+            console.log(experiment.name + ' experiment finished with ' + experiment.samplesTotal  + ' samples');
             console.log('Experiment path: ' + experiment.filePath);
         } else {
             console.log(experiment.name + ' experiment failed. sucks to be you.');
